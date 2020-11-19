@@ -1,4 +1,4 @@
-# REST API для проекта Mesto
+# REST API для проекта News Explorer
 
 
 ## Стек
@@ -9,28 +9,11 @@
 
 
 ## Публичный IP-адрес
-178.154.233.176
+178.154.232.16
 
 
 ## Домен
-https://api.gss.students.nomoreparties.xyz
-
-
-## Используемые роуты:
-
-```bash
-GET /users # возвращает всех пользователей
-GET /users/:userId # возвращает пользователя по _id
-POST /users # создаёт пользователя
-PATCH /users/me # обновляет профиль
-PATCH /users/me/avatar # обновляет аватар
-
-GET /cards # возвращает все карточки
-POST /cards # создаёт карточку
-DELETE /cards/:cardId # удаляет карточку по идентификатору
-PUT /cards/:cardId/likes # поставить лайк карточке
-DELETE /cards/:cardId/likes # убрать лайк с карточки
-```
+https://api.gnews.students.nomoreparties.co
 
 
 ## Для сборки проекта необходимо выполнить команды:
@@ -40,10 +23,3 @@ npm i # установить все пакеты
 npm run start # запускает сервер
 npm run dev # запускает сервер с hot-reload
 ```
-
-## Frontend сервиса на github
-https://github.com/Nail-Ya/react-mesto-auth
-
-
-## Ссылка на frontend, который использует данный сервер
-https://gss.students.nomoreparties.xyz/
