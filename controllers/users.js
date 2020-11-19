@@ -32,7 +32,7 @@ const createUser = (req, res, next) => {
           throw new BadRequestError('Введены невалидные данные');
         }
 
-        if (error.name === 'MongoError' || error.code === 11000) {
+        if (error.name === 'MongoError' && error.code === 11000) {
           throw new ConflictError('Пользователь с такой электронной почтой уже зарегистрирован');
         }
       }))

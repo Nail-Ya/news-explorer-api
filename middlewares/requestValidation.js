@@ -1,4 +1,13 @@
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, CelebrateError } = require('celebrate');
+const validator = require('validator');
+
+// функция валидации ссылки
+const urlValidation = (value) => {
+  if (!validator.isURL(value)) {
+    throw new CelebrateError('Введена невалидная ссылка');
+  }
+  return value;
+};
 
 // схема валидации статьи
 const validateArticle = celebrate({
@@ -28,17 +37,15 @@ const validateArticle = celebrate({
         'string.base': 'Поле с источником статьи должно быть записано в виде строки',
         'string.empty': 'Поле с источником статьи должно быть заполнено',
       }),
-    link: Joi.string().required().uri()
+    link: Joi.string().required().custom(urlValidation)
       .messages({
         'string.base': 'Поле с ссылкой на статью должно быть записано в виде строки',
         'string.empty': 'Поле с ссылкой на статью должно быть заполнено',
-        'string.uri': 'Ведена неправильная ссылка',
       }),
-    image: Joi.string().required().uri()
+    image: Joi.string().required().custom(urlValidation)
       .messages({
         'string.base': 'Поле с ссылкой на иллюстрацию к статье должно быть записано в виде строки',
         'string.empty': 'Поле с ссылкой на иллюстрацию к статье должно быть заполнено',
-        'string.uri': 'Ведена неправильная ссылка',
       }),
   }),
 });
