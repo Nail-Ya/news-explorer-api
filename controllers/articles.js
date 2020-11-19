@@ -1,0 +1,90 @@
+const Article = require('../models/article');
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const ForbiddenError = require('../errors/ForbiddenError');
+
+const getAllSavedArticles = (req, res, next) => {
+  Article.find({ owner: req.user._id })
+    .then((articles) => {
+      if (articles === null) {
+        throw new NotFoundError('В базе данных нету сохраненных статей');
+      }
+
+      res
+        .status(200)
+        .send({ data: articles });
+    })
+
+    .catch(() => {
+      throw new NotFoundError('В базе данных нету сохраненных статей');
+    })
+
+    .catch(next);
+};
+
+const createArticle = (req, res, next) => {
+  const {
+    keyword, title, text, date, source, link, image,
+  } = req.body;
+
+  Article.create({
+    keyword, title, text, date, source, link, image, owner: req.user._id,
+  })
+    .then((article) => {
+      res
+        .status(200)
+        .send({
+          keyword: article.keyword,
+          title: article.title,
+          text: article.text,
+          date: article.date,
+          source: article.source,
+          link: article.link,
+          image: article.image,
+        });
+    })
+
+    .catch((error) => {
+      console.log(error);
+      if (error.name === 'ValidationError') {
+        throw new BadRequestError(`${error.message}`);
+      }
+    })
+
+    .catch(next);
+};
+
+const removeArticle = (req, res, next) => {
+  Article.findById(req.params.id)
+    .populate('owner')
+    .then((article) => {
+      if (article.owner._id.toString() !== req.user._id) {
+        throw new ForbiddenError('Недостаточно прав для выполнения операции');
+      }
+
+      Article.findByIdAndRemove(req.params.id)
+        .then((articleForRemove) => {
+          res
+            .status(200)
+            .send(articleForRemove);
+        })
+
+        .catch(next);
+    })
+
+    .catch((error) => {
+      if (error instanceof ForbiddenError) {
+        throw new ForbiddenError('Недостаточно прав для выполнения операции');
+      }
+
+      throw new NotFoundError('В базе данных нет статьи с таким id');
+    })
+
+    .catch(next);
+};
+
+module.exports = {
+  getAllSavedArticles,
+  createArticle,
+  removeArticle,
+};
