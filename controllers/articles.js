@@ -6,10 +6,6 @@ const ForbiddenError = require('../errors/ForbiddenError');
 const getAllSavedArticles = (req, res, next) => {
   Article.find({ owner: req.user._id })
     .then((articles) => {
-      if (articles === null) {
-        throw new NotFoundError('В базе данных нету сохраненных статей');
-      }
-
       res
         .status(200)
         .send({ data: articles });
@@ -44,6 +40,7 @@ const createArticle = (req, res, next) => {
       if (error.name === 'ValidationError') {
         throw new BadRequestError(`${error.message}`);
       }
+
       throw error;
     })
 
@@ -67,13 +64,6 @@ const removeArticle = (req, res, next) => {
         })
 
         .catch(next);
-    })
-
-    .catch((error) => {
-      if (error instanceof ForbiddenError) {
-        throw new ForbiddenError('Недостаточно прав для выполнения операции');
-      }
-      throw error;
     })
 
     .catch(next);

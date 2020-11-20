@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -35,6 +34,8 @@ const createUser = (req, res, next) => {
         if (error.name === 'MongoError' && error.code === 11000) {
           throw new ConflictError('Пользователь с такой электронной почтой уже зарегистрирован');
         }
+
+        throw error;
       }))
 
     .catch(next);
@@ -56,10 +57,6 @@ const login = (req, res, next) => {
         .send({ token });
     })
 
-    .catch(() => {
-      throw new UnauthorizedError('Произошла ошибка: вы не вошли в приложение');
-    })
-
     .catch(next);
 };
 
@@ -75,10 +72,6 @@ const getUserInfo = (req, res, next) => {
           email: userById.email,
           name: userById.name,
         });
-    })
-
-    .catch(() => {
-      throw new NotFoundError('Пользователя нет в базе данных');
     })
 
     .catch(next);
